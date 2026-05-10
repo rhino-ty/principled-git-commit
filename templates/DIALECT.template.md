@@ -1,6 +1,6 @@
 # {{PROJECT_NAME}} — Commit Dialect
 
-> Project-specific extensions to commit conventions. The **universal layer** lives in `~/.claude/skills/commit/SKILL.md` (or `<project>/.claude/skills/commit/SKILL.md` for project-level installs). Read that first.
+> Project-specific extensions to commit conventions. The **universal layer** lives in `~/.claude/skills/principled-git-commit/SKILL.md` (or `<project>/.claude/skills/principled-git-commit/SKILL.md` for project-level installs). Read that first.
 >
 > This dialect file extends the universal layer with **project-specific facts only** — domain proper nouns, custom scope catalog, custom trailers, workflow integrations. It never overrides universal principles or rules.
 
@@ -21,7 +21,7 @@ Terms that should NOT be translated to English. Keep in original script in summa
 
 ## 2. Scope Catalog (200-commit empirical)
 
-Top-frequency scopes from this repo's actual `git log`. Keep this section regenerated periodically via `~/.claude/skills/commit/scripts/analyze-history.sh`.
+Top-frequency scopes from this repo's actual `git log`. Keep this section regenerated periodically via `~/.claude/skills/principled-git-commit/scripts/analyze-history.sh`.
 
 {{SCOPE_CATALOG}}
 
@@ -134,4 +134,4 @@ In addition to universal §11 anti-patterns:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 0.1 | {{DATE}} | Initial dialect scaffolded by `commit-skill@{{SKILL_VERSION}}` | scaffold |
+| 0.1 | {{DATE}} | Initial dialect scaffolded by `principled-git-commit@{{SKILL_VERSION}}` | scaffold |

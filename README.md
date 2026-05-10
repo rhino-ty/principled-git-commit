@@ -1,6 +1,6 @@
-# commit-skill
+# principled-git-commit
 
-> Claude Code skill: Conventional Commits + best-practice workflow + project-dialect scaffolding. Treats commits as durable history that serves four readers — `git log` scanners, `git blame` tracers, `git bisect` hunters, and **AI agents**.
+> Claude Code skill: Conventional Commits + 5 founding principles + 5-step workflow + project-dialect scaffolding. Treats commits as durable history that serves four readers — `git log` scanners, `git blame` tracers, `git bisect` hunters, and **AI agents**.
 
 [![Made with](https://img.shields.io/badge/Made%20with-Claude%20Skills-blueviolet)](https://docs.claude.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -31,7 +31,7 @@ Every principle in this skill calls out the AI-reader implication alongside the 
 ## Install
 
 ```bash
-npx skills add rhino-ty/commit-skill
+npx skills add rhino-ty/principled-git-commit
 ```
 
 Auto-loads on next Claude Code session and triggers on keywords: `commit`, `git commit`, `stage`, `commit message`, `커밋`.
@@ -39,7 +39,7 @@ Auto-loads on next Claude Code session and triggers on keywords: `commit`, `git 
 To verify:
 
 ```bash
-ls ~/.claude/skills/commit/
+ls ~/.claude/skills/principled-git-commit/
 # SKILL.md  lang/  templates/  scripts/  references/  examples/
 ```
 
@@ -49,10 +49,10 @@ If a team needs to pin the skill version per repo (and have it land for new clon
 
 ```bash
 cd <project>
-npx skills add rhino-ty/commit-skill --project
+npx skills add rhino-ty/principled-git-commit --project
 ```
 
-This places the skill in `<project>/.claude/skills/commit/` (repo-tracked). Project install **overrides** any global install of the same skill.
+This places the skill in `<project>/.claude/skills/principled-git-commit/` (repo-tracked). Project install **overrides** any global install of the same skill.
 
 ## Generate a project dialect
 
@@ -60,7 +60,7 @@ When you start a fresh project (or import this skill into an existing one), let 
 
 ```bash
 cd <project>
-~/.claude/skills/commit/scripts/scaffold-dialect.sh
+~/.claude/skills/principled-git-commit/scripts/scaffold-dialect.sh
 ```
 
 This drops `docs/references/COMMIT.md` (a project-specific extension that points back to the skill) populated with:
@@ -82,7 +82,7 @@ The **convention itself** (English-default body, lowercase summary, imperative m
 ## Layout
 
 ```
-commit-skill/
+principled-git-commit/
 ├── SKILL.md                      # Universal conventions (English)
 ├── lang/
 │   └── ko/SKILL.md               # Korean prose variant

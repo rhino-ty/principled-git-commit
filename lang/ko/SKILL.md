@@ -1,5 +1,5 @@
 ---
-name: commit
+name: principled-git-commit
 description: >
   Conventional Commits 1.0.0 + 베스트 프랙티스 워크플로 (diff → staging →
   type 결정 → secrets blocklist → 사전 체크리스트) + 5 founding principle
@@ -29,7 +29,7 @@ description: >
 license: MIT
 metadata:
   author: rhino-ty
-  version: "0.1.0"
+  version: "0.1.1"
   variant: ko
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: commit
+name: principled-git-commit
 description: >
   Conventional Commits 1.0.0 + best-practice workflow for git commit messages
   that serve four readers — `git log` scanners, `git blame` tracers, `git bisect`
@@ -48,7 +48,7 @@ description: >
 license: MIT
 metadata:
   author: rhino-ty
-  version: "0.1.0"
+  version: "0.1.1"
 ---
 
 # Commit Conventions
@@ -546,7 +546,7 @@ This skill provides the universal layer. Project-specific extensions live in `<p
 ### 13.3 Generating a dialect
 
 ```bash
-~/.claude/skills/commit/scripts/scaffold-dialect.sh
+~/.claude/skills/principled-git-commit/scripts/scaffold-dialect.sh
 ```
 
 Interactive prompt:
@@ -582,3 +582,4 @@ When this skill triggers:
 | Version | Date | Notes |
 |---------|------|-------|
 | 0.1.0 | 2026-05-10 | Initial release. Universal extraction from TTiRingGo `docs/references/COMMIT.md` v0.4. PDCA, Korean proper nouns, and TTiRingGo-specific scope catalog moved out to project dialect (see §13). |
+| 0.1.1 | 2026-05-11 | Rename `commit-skill` → `principled-git-commit`. Frontmatter `name:`, install paths, scaffold script, DIALECT template, README all updated. Skill content (§0-§14) unchanged. |

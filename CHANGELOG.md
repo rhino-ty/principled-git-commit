@@ -10,6 +10,34 @@ trailer format) is upstream-stable, so most changes here will be about
 empirical refinements (length sweet-spot data, anti-pattern catalog) and
 project-dialect tooling (template, scaffold script, analyze-history script).
 
+## [0.1.1] — 2026-05-11
+
+### Changed
+
+- Renamed from `commit-skill` to `principled-git-commit`. Plain
+  `commit-skill` undersold the methodology layer (5 founding principles +
+  4-reader rationale + 5-step workflow + dialect scaffolding) and
+  collided semantically with the bare `commit` type-name used inside
+  the frontmatter `name:` field. The new name communicates that the
+  skill bundles principles, not just a format spec.
+- All paths and install instructions updated:
+  `npx skills add rhino-ty/principled-git-commit`
+  `~/.claude/skills/principled-git-commit/`
+- SKILL.md frontmatter `name:` updated from `commit` to
+  `principled-git-commit` so it matches the repo and skill names of
+  sibling rhino-ty skills (apca-contrast / web-project-plan / etc.).
+
+### Migration
+
+If you installed v0.1.0 under the old name, migrate with:
+
+```bash
+npx skills remove commit
+npx skills add rhino-ty/principled-git-commit -g
+```
+
+Skill content (SKILL.md §0-§14) is unchanged; only naming moves.
+
 ## [0.1.0] — 2026-05-10
 
 ### Added
