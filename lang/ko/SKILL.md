@@ -1,18 +1,36 @@
 ---
 name: commit
-description: Conventional Commits 1.0.0 + 베스트 프랙티스 워크플로 (diff → staging → type 결정 → secrets blocklist → 사전 체크리스트) + 5 가지 founding principle (atomic / leaves-repo-green / why-over-what / imperative / searchable) + project dialect scaffolding. 커밋을 4 reader (`git log` 스캐너 / `git blame` 추적자 / `git bisect` 사냥꾼 / **AI agent**)에게 동시에 도움되는 영구 history로 다룸. 사용자가 commit / git commit / stage / 커밋 keyword 언급 시 자동 trigger.
-triggers:
-  - commit
-  - git commit
-  - stage files
-  - commit message
-  - 커밋
-args:
-  lang:
-    type: enum
-    values: [en, ko]
-    default: en
-    description: en으로 toggle하면 상위 SKILL.md (영문 변형)을 로드.
+description: >
+  Conventional Commits 1.0.0 + 베스트 프랙티스 워크플로 (diff → staging →
+  type 결정 → secrets blocklist → 사전 체크리스트) + 5 founding principle
+  (atomic / leaves-repo-green / why-over-what / imperative / searchable) +
+  project dialect scaffolding. 커밋을 4 reader (`git log` 스캐너 / `git blame`
+  추적자 / `git bisect` 사냥꾼 / AI agent — `/clear` 컨텍스트 복원 / PR 리뷰 /
+  changelog 생성 / NL 질의)에게 동시에 도움되는 영구 history로 다룸.
+
+  본 파일은 한국어 prose 변형. 룰 자체 (영문 default body, lowercase summary,
+  imperative mood, atomic / why-over-what 등 §0 전 원칙)는 영문 SKILL.md와
+  동일 — 변형 무관.
+
+  ALWAYS trigger 조건은 영문 SKILL.md frontmatter §ALWAYS와 동일.
+
+  Triggers (multi-lingual):
+  EN: commit, git commit, stage, commit message, breaking change,
+      conventional commits, revert, fixup, amend, cherry-pick, changelog
+  KO: 커밋, 깃 커밋, 스테이지, 커밋 메시지, 커밋 룰, 컨벤셔널 커밋, 리버트,
+      되돌리기, 어맨드, 커밋 컨벤션, 커밋 메시지 검토
+  JA: コミット, git コミット, ステージ, コミットメッセージ, ブレーキング
+      チェンジ, リバート, アメンド
+  ZH: 提交, git 提交, 暂存, 提交信息, 提交消息, 重大变更, 回滚, 修订
+
+  Audience: 한국어를 모국어로 쓰는 개발자. §0 founding principle을 한국어로
+  먼저 잡고 싶은 사용자에게 적합. §1-§14 룰 자체는 영문 SKILL.md를 정본으로
+  참조 — 본 변형이 룰을 새로 정의하지 않음.
+license: MIT
+metadata:
+  author: rhino-ty
+  version: "0.1.0"
+  variant: ko
 ---
 
 # Commit Conventions (Korean prose variant)

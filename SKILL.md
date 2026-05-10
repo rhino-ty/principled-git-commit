@@ -1,18 +1,54 @@
 ---
 name: commit
-description: Conventional Commits 1.0.0 specification plus best-practice workflow (diff → staging → type decision → secrets blocklist → pre-commit checklist), founding principles (atomic / leaves-repo-green / why-over-what / imperative / searchable), and project-dialect scaffolding. Treats commits as durable history serving four readers — `git log` scanners, `git blame` tracers, `git bisect` hunters, and AI agents (LLMs consuming history for `/clear` context rebuild, PR review, changelog generation, natural-language history queries). Use this skill whenever the user asks to write, plan, validate, or scaffold git commits — including questions like "should I split this commit?", "what type is this?", "good commit message for X?", or any task that ends with `git commit`. Trigger even when the user says only "commit", "stage", "git log", "커밋", or pastes a draft message asking for review.
-triggers:
-  - commit
-  - git commit
-  - stage files
-  - commit message
-  - 커밋
-args:
-  lang:
-    type: enum
-    values: [en, ko]
-    default: en
-    description: Switch prose to Korean variant by loading lang/ko/SKILL.md instead of this file.
+description: >
+  Conventional Commits 1.0.0 + best-practice workflow for git commit messages
+  that serve four readers — `git log` scanners, `git blame` tracers, `git bisect`
+  hunters, and AI agents (LLMs rebuilding context after `/clear`, reviewing PRs,
+  generating changelogs, answering natural-language history queries).
+
+  Five founding principles (atomic / leaves-repo-green / why-over-what /
+  imperative / searchable), five-step workflow (diff inspection → staging →
+  type decision tree → secrets blocklist → pre-commit checklist), explicit
+  Breaking-Change / Revert / Amend / Trailer protocols, and a dialect
+  scaffolder that generates per-project `docs/references/COMMIT.md` for
+  project-specific extensions (domain proper nouns, custom trailers like
+  `Plan SC` / `Refs:`, workflow hooks like PDCA / Linear / Jira).
+
+  ALWAYS trigger this skill when the user:
+  (1) asks to write, generate, or improve a commit message
+  (2) pastes a commit-message draft for review or critique
+  (3) asks "should I split this commit?" / "what type for this change?" /
+      "is this breaking?"
+  (4) is finishing a logical unit of work and about to run `git commit`
+  (5) mentions stage / staging / amend / revert / fixup / cherry-pick in a
+      commit-authoring context
+  (6) asks how to set up PDCA / Linear / Jira-driven auto-commits
+  (7) requests scaffolding a `COMMIT.md` dialect file for a project
+
+  Triggers (multi-lingual):
+  EN: commit, git commit, stage, commit message, breaking change,
+      conventional commits, revert, fixup, amend, cherry-pick, changelog
+  KO: 커밋, 깃 커밋, 스테이지, 커밋 메시지, 커밋 룰, 컨벤셔널 커밋, 리버트,
+      되돌리기, 어맨드, 커밋 컨벤션, 커밋 메시지 검토
+  JA: コミット, git コミット, ステージ, コミットメッセージ, ブレーキング
+      チェンジ, リバート, アメンド
+  ZH: 提交, git 提交, 暂存, 提交信息, 提交消息, 重大变更, 回滚, 修订
+  ES: commit, mensaje de commit, preparar, cambio incompatible, revertir
+  FR: commit, message de commit, indexer, changement incompatible, revert
+  DE: Commit, Commit-Nachricht, Staging, breaking change, revert
+  IT: commit, messaggio di commit, modifica incompatibile, revert
+
+  Do NOT trigger for: pure code generation unrelated to git, branch/merge/
+  rebase mechanics not about message authoring, CI/CD pipeline configuration,
+  or non-git version-control systems.
+
+  Audience: developers writing git commits. Use technical terms directly.
+  Korean prose variant available at `lang/ko/SKILL.md` for Korean-first readers
+  — the convention itself stays English-default regardless of variant.
+license: MIT
+metadata:
+  author: rhino-ty
+  version: "0.1.0"
 ---
 
 # Commit Conventions

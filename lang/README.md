@@ -9,17 +9,26 @@ The skill ships with one prose variant per language. The **convention itself** d
 
 ## Switching
 
-Pass the `lang` arg when triggering the skill:
+Two practical ways to use the Korean variant:
 
-```
-/commit lang=ko
-```
+### Option A — Manual reference
 
-Or set globally in your skill config:
+When you want to read the founding principles in Korean, open `lang/ko/SKILL.md` directly. The agent loads the top-level English `SKILL.md` by default; the Korean variant is a complementary reading aid for human contributors, not a separate trigger target.
+
+### Option B — Replace at install time
+
+If you prefer the Korean variant to be the agent's primary instruction file, swap it in after install:
 
 ```bash
-echo 'COMMIT_SKILL_LANG=ko' >> ~/.claude/skills/commit/.config
+cd ~/.claude/skills/commit
+mv SKILL.md lang/en/SKILL.md
+mkdir -p lang/en
+ln -sf lang/ko/SKILL.md SKILL.md
 ```
+
+(Or copy `lang/ko/SKILL.md` over the top-level `SKILL.md` directly.)
+
+The agent will then load Korean prose at trigger time. The convention itself does not change — bodies are still English-default, summaries are still lowercase imperative, etc. Only the explanation prose is Korean.
 
 ## Why the convention itself stays English
 
