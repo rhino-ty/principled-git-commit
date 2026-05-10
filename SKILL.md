@@ -49,7 +49,7 @@ description: >
 license: MIT
 metadata:
   author: rhino-ty
-  version: "0.1.3"
+  version: "0.1.4"
 ---
 
 # Commit Conventions
@@ -697,3 +697,4 @@ $ORG_HOME/COMMIT.md                               ← org-level dialect (intrane
 | 0.1.1 | 2026-05-11 | Rename `commit-skill` → `principled-git-commit`. Frontmatter `name:`, install paths, scaffold script, DIALECT template, README all updated. Skill content (§0-§14) unchanged. |
 | 0.1.2 | 2026-05-11 | Genericize all examples — replace project-specific commit examples with patterns drawn from real-world open-source operating models (Stripe-style idempotency keys, bcrypt→argon2id migration, idempotent payments revert, kernel-style mm/oom_kill long-form, monorepo `packages/ui` scopes, feature-flag rollout). `examples/good-commits.md` reorganized into 12 categories (A: single-line / B: why-driven / C: features / D: refactors / E: perf with metrics / F: breaking / G: reverts / H: multi-author + AI co-author / I: test/chore/docs/build/ci / J: kernel-style long-form / K: monorepo + feature-flag / L: anti-patterns). `templates/DIALECT.example.md` swapped from a single project to a fictional "Acme Cloud" pnpm monorepo + Linear + LaunchDarkly + squash-merge example. `templates/DIALECT.template.md` placeholder examples diversified (PDCA / squash-merge / trunk-based-with-flags workflows; brand names + native-language regulatory terms + service names). `scaffold-dialect.sh` prompt updated. SKILL.md inline examples (§0.4 / §0.5 / §2 type table / §3.4 feature-scope / §4 length / §8 trailer examples / §10 revert) replaced with generic real-world patterns. References to one specific source repo softened to "private-project 200-commit study" while preserving the empirical attribution. |
 | 0.1.3 | 2026-05-11 | Coverage expansion: §1.3 Three commit surfaces (commit / PR title / squash body — different audiences, same principles), §3.5 Non-Conventional formats acknowledgment (kernel-style / bracket-prefix / Mozilla bug-numbered / no-prefix imperative / Jira-id all valid — §0 principles still apply), §8.4 AI co-authoring policy (when to add `Co-authored-by:` for Claude / Copilot / Cursor / Gemini, with substantial-vs-trivial decision matrix), §13.5 Org-level dialects (3-layer model: universal skill + org-level COMMIT.md + project-level COMMIT.md, with override rules). |
+| 0.1.4 | 2026-05-11 | Drop premature CI + CONTRIBUTING.md from v0.1.3 — single-contributor repo with no branch protection got ~10KB of pollution per install for symbolic "eat-our-own-dogfood" value with effectively zero ROI. `scripts/validate-commit-msg.sh` stays (usable as a local commit-msg hook regardless of repo CI presence). |

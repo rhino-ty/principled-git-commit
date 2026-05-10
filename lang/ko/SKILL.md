@@ -29,7 +29,7 @@ description: >
 license: MIT
 metadata:
   author: rhino-ty
-  version: "0.1.3"
+  version: "0.1.4"
   variant: ko
 ---
 

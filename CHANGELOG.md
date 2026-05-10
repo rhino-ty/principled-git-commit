@@ -10,6 +10,31 @@ trailer format) is upstream-stable, so most changes here will be about
 empirical refinements (length sweet-spot data, anti-pattern catalog) and
 project-dialect tooling (template, scaffold script, analyze-history script).
 
+## [0.1.4] — 2026-05-11
+
+### Removed
+
+- `.github/workflows/validate-commits.yml` and `CONTRIBUTING.md`,
+  both added in v0.1.3 (#6 of the polish batch). At this stage —
+  single contributor, no branch protection, no README badge surfacing
+  the green-build status — they added ~10KB of pollution to every
+  end-user install with effectively zero ROI. The pipefail bug the
+  CI caught could have been caught by a 5-second local smoke test
+  before push.
+- The CI infrastructure may be re-introduced at v1.0 or when external
+  contributors arrive, with the install-pollution problem solved by
+  whatever mechanism `npx skills` settles on (`.skillignore`,
+  sparse-checkout publish branch, etc.).
+
+### Kept
+
+- `scripts/validate-commit-msg.sh` — its value is independent of
+  repo CI. Any developer can wire it as a local `commit-msg` hook:
+  ```bash
+  ln -sf ~/.claude/skills/principled-git-commit/scripts/validate-commit-msg.sh \
+         "$(git rev-parse --git-dir)/hooks/commit-msg"
+  ```
+
 ## [0.1.3] — 2026-05-11
 
 ### Added
