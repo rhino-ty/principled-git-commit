@@ -13,7 +13,7 @@ Most commit conventions stop at "use Conventional Commits." This skill adds:
 - **Five-step commit workflow** (diff inspection → staging → type-decision tree → secrets blocklist → mental checklist) absorbed from `awesome-copilot/git-commit` patterns
 - **Breaking change / revert / amend protocols** so history stays bisect-friendly
 - **Anti-patterns** with concrete remediation (vague summaries, `##` headers in body, `git add -A`, amending published commits, etc.)
-- **Project dialect scaffolder** — generates a per-project `docs/references/COMMIT.md` skeleton for project-specific extensions (Korean domain nouns, custom trailers like `Plan SC` or `Refs:`, PDCA-style auto-commit hooks, scope catalogs derived from actual `git log` analysis)
+- **Project dialect scaffolder** — generates a per-project `docs/references/COMMIT.md` skeleton for project-specific extensions (native-language domain nouns, custom trailers like `Refs: #1234` / `Flag:` / `Plan SC:`, workflow hooks like PDCA / Linear / Jira / squash-merge PR, scope catalogs derived from actual `git log` analysis)
 
 The skill is **content-separated**: universal rules ship inside the skill, project-specific dialect lives in the project's `docs/references/`. This lets one global install serve every repo while each repo retains its own dialect.
 
@@ -88,7 +88,7 @@ principled-git-commit/
 │   └── ko/SKILL.md               # Korean prose variant
 ├── templates/
 │   ├── DIALECT.template.md       # Project dialect skeleton
-│   └── DIALECT.example.md        # Filled example (TTiRingGo)
+│   └── DIALECT.example.md        # Filled example (Acme Cloud — fictional pnpm monorepo + Linear + LaunchDarkly)
 ├── scripts/
 │   ├── scaffold-dialect.sh       # Interactive dialect generator
 │   └── analyze-history.sh        # git log → scope catalog

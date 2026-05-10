@@ -29,7 +29,7 @@ description: >
 license: MIT
 metadata:
   author: rhino-ty
-  version: "0.1.1"
+  version: "0.1.2"
   variant: ko
 ---
 
@@ -86,24 +86,26 @@ Summary는 명령형. git 자체 메시지(`Merge`, `Revert`)와 통일.
 → **일관된 verb 패턴**. git tooling + AI classification (changelog 생성, type 추정) 모두 동사 형태에 의존.
 
 ```
-✅ add phone validator
-✅ fix double-render in card
-✅ migrate byte SoT
-❌ added phone validator     (과거형)
-❌ adding phone validator    (진행형)
-❌ phone validator added     (수동태)
+✅ add idempotency-key support to /v1/payments
+✅ fix double-render in <Modal> on focus return
+✅ migrate auth hashing from bcrypt to argon2id
+❌ added idempotency-key support     (과거형)
+❌ adding idempotency-key support    (진행형)
+❌ idempotency-key support added     (수동태)
 ```
 
 ### 0.5 Searchable — keyword-rich summary + body
 
 도메인 명사 / 함수명 / 파일 경로 / SoT 이름 / 컴포넌트 이름을 명시. vague 동사(`improve`, `update`, `enhance`)는 대상 명사로 보강.
 
-→ **`git log --grep` + AI 임베딩 검색**. 6개월 후 "★ 변경 트랜잭션 어디서 했지?" 같은 자연어 질의가 1번에 정답 commit으로 hit. AI는 vague keyword에 hallucinate, 구체 keyword에 정확.
+→ **`git log --grep` + AI 임베딩 검색**. 6개월 후 "Idempotency-Key 어디서 추가했지?" 같은 자연어 질의가 1번에 정답 commit으로 hit. AI는 vague keyword에 hallucinate, 구체 keyword에 정확.
 
 ```
-❌ feat(messages): improve form
-✅ feat(messages/send): rewrite page entry — 3-zone layout,
-   FormProvider, RecipientsFieldArrayProvider
+❌ feat(api): improve checkout
+✅ feat(api/payments): add Idempotency-Key header support with 24h replay window
+
+❌ refactor: cleanup auth helpers
+✅ refactor(auth): replace bcrypt with argon2id (memory-hard against GPU attackers)
 ```
 
 ---

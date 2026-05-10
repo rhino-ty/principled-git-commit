@@ -10,6 +10,51 @@ trailer format) is upstream-stable, so most changes here will be about
 empirical refinements (length sweet-spot data, anti-pattern catalog) and
 project-dialect tooling (template, scaffold script, analyze-history script).
 
+## [0.1.2] — 2026-05-11
+
+### Changed
+
+- Genericized every illustrative commit example so the skill no longer
+  reads as if extracted from one specific project. Examples now draw
+  from patterns common across real-world open-source operating models
+  (Stripe-style idempotency keys, bcrypt → argon2id migrations,
+  Lighthouse-measured perf wins, kernel-style mm/oom_kill long-form,
+  monorepo `packages/ui` scopes, feature-flag rollouts via LaunchDarkly).
+- `examples/good-commits.md` reorganized into 12 categories:
+  - A: single-concept fixes (no body)
+  - B: why-driven fixes (focused body)
+  - C: new features with rationale
+  - D: refactors
+  - E: perf with measured impact
+  - F: breaking changes
+  - G: reverts
+  - H: multi-author / pair / AI co-author (incl. `Co-authored-by: Claude`)
+  - I: test / chore / docs / build / ci
+  - J: long-form (kernel / Postgres style)
+  - K: monorepo + feature-flag patterns
+  - L: anti-patterns (vague summary / bundled concerns / past-tense /
+       `##` headers / unannotated breaking / `git add -A` blanket /
+       squashed-PR with thrown-away history)
+- `templates/DIALECT.example.md` replaced — fictional **Acme Cloud**
+  pnpm monorepo + Linear ticket integration (`Closes: ACM-1234`) +
+  LaunchDarkly feature flags (`Flag:`, `Rollout:` trailers) +
+  squash-merge PR workflow. Demonstrates a different operating model
+  from the original PDCA-driven exemplar.
+- `templates/DIALECT.template.md` placeholder examples now show three
+  different workflow integrations (PDCA / squash-merge / trunk-based
+  with feature flags) so users adapt to whichever matches their team.
+- SKILL.md inline examples updated across §0.4 / §0.5 / §2 type table /
+  §3.4 feature-scope / §4 length table / §8 trailer examples / §10
+  revert format.
+- Empirical attribution softened from naming a specific repo to
+  "private-project 200-commit study (2026-05)" — the data is preserved
+  but the project name is not leaked.
+
+### Migration
+
+No action required. The convention itself (§0-§14) is unchanged. Only
+the strings inside example blocks moved.
+
 ## [0.1.1] — 2026-05-11
 
 ### Changed
@@ -42,8 +87,10 @@ Skill content (SKILL.md §0-§14) is unchanged; only naming moves.
 
 ### Added
 
-- Universal SKILL.md (548 lines) extracted from a 612-line TTiRingGo
-  `docs/references/COMMIT.md` after a 200-commit empirical study.
+- Universal SKILL.md (~580 lines) extracted from a 612-line private-
+  project `docs/references/COMMIT.md` after a 200-commit empirical
+  study (length sweet-spots, `##`-header outlier observation,
+  sub/multi-scope conventions).
 - §0 Principles — 4 readers (`git log` scanner / `git blame` tracer /
   `git bisect` hunter / AI agent) plus 5 principles (atomic /
   leaves-repo-green / why-over-what / imperative / searchable). Each
@@ -83,9 +130,11 @@ Skill content (SKILL.md §0-§14) is unchanged; only naming moves.
   readers; the convention itself stays English-default regardless of
   variant.
 - `templates/DIALECT.template.md` — placeholder skeleton.
-- `templates/DIALECT.example.md` — filled example using TTiRingGo (9
-  Korean proper nouns, scope catalog from a real 200-commit study,
-  PDCA Phase auto-commit policy, b8792c0 cited as a cautionary tale).
+- `templates/DIALECT.example.md` — filled example using "Acme Cloud"
+  (fictional pnpm monorepo + Linear ticket integration + LaunchDarkly
+  feature flags + squash-merge PR policy). Demonstrates how a project
+  documents its own scope catalog, custom trailers (`Flag:`,
+  `Storybook:`, `Rollout:`), and workflow boundaries.
 - `scripts/analyze-history.sh` — portable bash tool that emits top
   type(scope) frequencies, sub/multi-scope detections, length stats,
   and `## ` header outlier counts for any git repo.

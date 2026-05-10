@@ -18,7 +18,7 @@
 
 ## Empirical sources
 
-- **TTiRingGo repo, 200-commit study (2026-05)** — supplied:
+- **Private-project 200-commit study (2026-05)** — supplied:
   - Length sweet-spot data: avg summary 71 chars (max 116), avg body 16 lines (max 84)
   - Markdown header outlier: 5 commits used `## ` headers, 195 did not. The skill's §5 codifies "no `##` in body" partly because of this 2.5%-of-corpus signal
   - Sub-scope (`/`) and multi-scope (`,`) usage frequencies — both observed in the wild and codified in §3.2 / §3.3

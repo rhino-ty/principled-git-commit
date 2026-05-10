@@ -12,10 +12,11 @@ Terms that should NOT be translated to English. Keep in original script in summa
 
 {{DOMAIN_NOUNS}}
 
-> Example entries:
-> - `친구톡` — KakaoTalk friend message channel
-> - `알림톡` — KakaoTalk notification channel
-> - `발신번호` — sender number (regulatory term)
+> Example entries (mix-and-match — pick whatever fits your project):
+> - **Brand names** — `BoardKit`, `Acme Pay`, `LDAP-Bridge`
+> - **Native-language regulatory terms** — `친구톡` (KakaoTalk friend channel), `정통망법` (Korean privacy statute), `LGPD` (Brazilian privacy law)
+> - **Native-language product names** — `Mercado Libre`, `Yahoo!知恵袋`
+> - **Internal service names that should stay verbatim** — `redis-shard-router`, `payment-gateway-v2`
 
 ---
 
@@ -25,13 +26,16 @@ Top-frequency scopes from this repo's actual `git log`. Keep this section regene
 
 {{SCOPE_CATALOG}}
 
-> Example entries:
+> Example entries (replace with your `git log` analysis output):
 > | Scope | Frequency | Description |
 > |---|:--:|---|
-> | `client` | 87 | Client-side code (Next.js app + components) |
-> | `server` | 62 | NestJS server modules |
-> | `messages` | 24 | Messaging domain (compose / send / channels) |
-> | `pdca` | 13 | PDCA cycle artifacts (plan / design / check / report) |
+> | `apps/dashboard` | 24 | Next.js dashboard app |
+> | `packages/ui` | 31 | Shared component library |
+> | `packages/db` | 14 | Drizzle / Prisma schema + migrations |
+> | `infra` | 11 | Terraform + GitHub Actions |
+> | `docs` | 16 | repo-level docs |
+>
+> Run `~/.claude/skills/principled-git-commit/scripts/analyze-history.sh 200` to derive your real catalog.
 
 ### 2.1 Sub-scopes in active use
 
@@ -53,13 +57,19 @@ Project-specific trailer tokens used in this repo. Stock git tooling won't auto-
 
 {{CUSTOM_TRAILERS}}
 
-> Example entries:
+> Example entries (pick whatever your team uses consistently):
 > | Token | Purpose | Example value |
 > |---|---|---|
-> | `Plan SC:` | Plan-document Success Criteria covered | `SNM-001~004` |
+> | `Refs:` | Linear / Jira / GitHub issue reference | `#42` or `ACM-1234` |
+> | `Closes:` | Auto-close issue on merge | `Closes: #42` |
+> | `Flag:` | Feature-flag involved | `Flag: billing-invoice-pdf-v2` |
+> | `Storybook:` | Storybook story added/changed | `Storybook: components-button--all-variants` |
+> | `Rollout:` | Phased rollout plan | `Rollout: 5% → 50% → 100%` |
+> | `Plan SC:` | PDCA Plan Success Criteria | `Plan SC: ABC-001~004` |
 > | `Design Ref:` | Design-document section pointer | `§2.1, §5.4` |
-> | `Match Rate:` | Gap analysis match score | `98.0% (raw 89.4%, iter-1)` |
-> | `Refs:` | Issue / commit cross-link | `#42` or `b8792c0` |
+> | `Match Rate:` | PDCA gap-analysis score | `98.0%` |
+> | `Fixes:` | Kernel-style "fix-of-prior-commit" pointer | `Fixes: abc123de ("subsystem: refactor X")` |
+> | `Reported-by:` | Kernel-style report attribution | `Reported-by: Name <email>` |
 
 ---
 
@@ -69,7 +79,7 @@ Auto-commit boundaries — phases at which the commit boundary is automatic, not
 
 {{WORKFLOW_INTEGRATION}}
 
-> Example for PDCA-driven projects:
+> Example A — **PDCA-driven projects** (Plan / Design / Do / Check / Act phases):
 >
 > | Phase boundary | Auto-commit | Example summary |
 > |---|:--:|---|
@@ -80,7 +90,21 @@ Auto-commit boundaries — phases at which the commit boundary is automatic, not
 > | iter-N complete | ✅ | `fix({{feature}}): iter-N — Gap #N close` |
 > | Report complete | ✅ | `docs(pdca): {{feature}} completion report (Match NN%)` |
 >
-> User-triggered (still): `git push` / `git push --force` / branch deletion / interactive rebase / history rewrite.
+> Example B — **Squash-merge PR projects** (GitHub flow with strict commit policy):
+>
+> | Boundary | Auto-commit | Notes |
+> |---|:--:|---|
+> | Inside feature branch | manual WIP commits | individual commits may not need to build |
+> | PR squash at merge | ✅ (via `gh pr merge --squash`) | the squashed message MUST follow universal §1; CI gates the merge |
+>
+> Example C — **Trunk-based with feature flags** (no long-running branches):
+>
+> | Boundary | Auto-commit | Notes |
+> |---|:--:|---|
+> | Each logical change to main | manual | every commit ships to production behind a flag |
+> | Flag flip (rollout milestone) | ✅ | `chore(flag): bump billing-invoice-pdf-v2 to 50%` |
+>
+> User-triggered regardless of project style: `git push --force` / branch deletion / interactive rebase / history rewrite.
 
 ---
 
@@ -103,18 +127,24 @@ Annotated good commits from this repo's history:
 > Example:
 >
 > ```
-> feat(sender-number-mgmt): M1 schema + INACTIVE seed
+> feat(packages/ui): add <DataTable> with virtualization (Closes ACM-1234)
 >
-> PDCA Phase=Do. ★ invariant via partial UNIQUE; INACTIVE via 공통코드.
+> Adds a virtualized table component for the dashboard inventory page —
+> the existing <Table> rendered all rows synchronously, which OOMed at
+> ~10k rows on low-memory devices. Uses TanStack Table v8 +
+> react-virtuoso.
 >
-> - server/src/db/schema/sender-numbers.schema.ts: +alias varchar(30),
->   +isDefault boolean, +partial UNIQUE `WHERE is_default = true`
-> ...
+> - packages/ui/src/DataTable/* (component + types + tests)
+> - Storybook: components-ui-data-table--all-variants
+> - API mirrors <Table> so call sites swap with one rename
 >
-> Plan SC: SNM-001~004
+> Closes: ACM-1234
+> Storybook: components-ui-data-table--all-variants
 > ```
 >
-> Why this works: scope = feature name (long-running cycle), `PDCA Phase=Do` makes the workflow context grep-able, `Plan SC` trailer cross-links to the plan document. Each bullet names the file + the change concept (not just file path).
+> Why this works: scope = `packages/<package-name>` (monorepo convention), summary names the concrete component and ticket, body explains the WHY (OOM at 10k rows), trailers cross-link the ticket and the Storybook story.
+>
+> Replace this section with **2-3 of your own real commits** with annotations explaining what makes them work in your team's context.
 
 ---
 
@@ -124,9 +154,13 @@ In addition to universal §11 anti-patterns:
 
 {{PROJECT_ANTI_PATTERNS}}
 
-> Example entries (TTiRingGo case):
-> - 80+ line commit body bundling `plan + design + M1 + M2` (predates Phase-auto-commit policy — see `b8792c0` for the cautionary tale)
-> - Translating `친구톡` → `friendtalk` (loses regulatory specificity, breaks grep)
+> Example entries — replace with patterns your team has actually had to call out:
+> - **Translating brand or regulatory names** (e.g., `BoardKit → "board kit"`) — loses precision and breaks `git log --grep`
+> - **PR titles without `type(scope):`** — bot rejects at merge time but wastes a review cycle; title PRs from the start
+> - **Squashing without rewriting the PR body** — the auto-generated WIP-commit list is not a commit body (see universal `examples/good-commits.md` §L.7)
+> - **Skipping `Refs:` trailer** — your ticket system sees no commit reference even though work was clearly done
+> - **Bundling phase commits** (e.g., `plan + design + module-1 + module-2` in one commit) — defeats `git bisect` and your project's phase-auto-commit policy
+> - **Putting feature-flag names in summary instead of `Flag:` trailer** — flags pollute `git log --oneline`
 
 ---
 

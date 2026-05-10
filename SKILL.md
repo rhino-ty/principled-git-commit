@@ -12,7 +12,8 @@ description: >
   Breaking-Change / Revert / Amend / Trailer protocols, and a dialect
   scaffolder that generates per-project `docs/references/COMMIT.md` for
   project-specific extensions (domain proper nouns, custom trailers like
-  `Plan SC` / `Refs:`, workflow hooks like PDCA / Linear / Jira).
+  `Refs:` / `Flag:` / `Plan SC:`, workflow hooks like PDCA / Linear /
+  Jira / squash-merge PRs).
 
   ALWAYS trigger this skill when the user:
   (1) asks to write, generate, or improve a commit message
@@ -48,7 +49,7 @@ description: >
 license: MIT
 metadata:
   author: rhino-ty
-  version: "0.1.1"
+  version: "0.1.2"
 ---
 
 # Commit Conventions
@@ -104,27 +105,26 @@ Summary is in imperative mood. Matches git's own internal messages (`Merge`, `Re
 → **Consistent verb pattern.** Auto-changelog tooling and AI classification (type inference, change summarization) both depend on stable verb forms.
 
 ```
-✅ add phone validator       (If applied, this commit will add phone validator)
-✅ fix double-render in card
-✅ migrate byte SoT
-❌ added phone validator     (past tense)
-❌ adding phone validator    (gerund)
-❌ phone validator added     (passive)
+✅ add idempotency-key support to /v1/payments     (If applied, this commit will add ...)
+✅ fix double-render in <Modal> on focus return
+✅ migrate auth hashing from bcrypt to argon2id
+❌ added idempotency-key support                   (past tense)
+❌ adding idempotency-key support                  (gerund)
+❌ idempotency-key support added                   (passive)
 ```
 
 ### 0.5 Searchable — keyword-rich summary and body
 
 Name domain nouns, function names, file paths, SoT names, and component names explicitly. Vague verbs (`improve`, `update`, `enhance`, `cleanup`) must be paired with a concrete noun.
 
-→ **Targets `git log --grep` and AI embedding search.** Six months later, a query like "where did I add the partial-unique constraint for default sender numbers?" should hit exactly one commit. Vague keywords cause AI hallucination; concrete keywords get pinpoint accuracy.
+→ **Targets `git log --grep` and AI embedding search.** Six months later, a query like "where did we add idempotency keys to the payments endpoint?" should hit exactly one commit. Vague keywords cause AI hallucination; concrete keywords get pinpoint accuracy.
 
 ```
-❌ feat(messages): improve form
-✅ feat(messages/send): rewrite page entry — 3-zone layout,
-   FormProvider, RecipientsFieldArrayProvider
+❌ feat(api): improve checkout
+✅ feat(api/payments): add Idempotency-Key header support with 24h replay window
 
-❌ refactor: cleanup phone helpers
-✅ refactor(client/phone): unify mobile required message via phone.ts SoT
+❌ refactor: cleanup auth helpers
+✅ refactor(auth): replace bcrypt with argon2id (memory-hard against GPU attackers)
 ```
 
 Keyword checklist: scope path / function or component name / pattern name / SoT name / domain enum.
@@ -171,15 +171,15 @@ type(scope): summary
 | Type | Purpose | Example |
 |---|---|---|
 | `feat` | New feature, new endpoint, new domain | `feat(shared): add phone domain` |
-| `fix` | Bug fix, regression repair | `fix(messages): apply formatPhone to optOutNumber pre-fill` |
-| `refactor` | Behavior unchanged, structure changed (extract / rename / SoT migration) | `refactor(client/phone): unify mobile required message via phone.ts SoT` |
-| `docs` | Documentation only — markdown, code comments, ref docs | `docs(claude,refs): document server phone SoT after unification cycle` |
-| `style` | Visual/formatting only — Tailwind class, badge tone, prettier sweep — no logic change | `style(badge): redistribute msg-* hues + tone down dark chips` |
-| `chore` | Build, tooling, scaffold, dependency bumps | `chore(shared): scaffold @ttiringgo/shared workspace skeleton` |
-| `test` | Test additions or regression baselines | `test(server): verify e2e regression baseline after night-time migration` |
-| `perf` | Performance-only change (measurable benchmark) | `perf(messages): cache compiled regex in adNightTime check` |
-| `ci` | CI / GitHub Actions / pipeline config | `ci: pin Node 20 in release workflow` |
-| `build` | Build system / bundler / compiler config | `build(client): switch from webpack to turbopack` |
+| `fix` | Bug fix, regression repair | `fix(auth): clear refresh token cookie on logout` |
+| `refactor` | Behavior unchanged, structure changed (extract / rename / SoT migration) | `refactor(routes): extract route definitions into a single registry` |
+| `docs` | Documentation only — markdown, code comments, ref docs | `docs(api): document rate-limit headers for /v1/users` |
+| `style` | Visual/formatting only — Tailwind class, badge tone, prettier sweep — no logic change | `style(navbar): align logo wordmark with new brand kit` |
+| `chore` | Build, tooling, scaffold, dependency bumps | `chore(deps): bump react 18.3.1 → 19.0.0` |
+| `test` | Test additions or regression baselines | `test(checkout): add e2e flow for guest user with split payment` |
+| `perf` | Performance-only change (measurable benchmark) | `perf(query): cache user permission lookup (300ms p95 → 12ms)` |
+| `ci` | CI / GitHub Actions / pipeline config | `ci(release): cache pnpm store across release matrix` |
+| `build` | Build system / bundler / compiler config | `build(rollup): output ESM + CJS from a single externals declaration` |
 | `revert` | The output of `git revert` — see §10 | |
 
 > Project may not use every type. If `perf`/`ci`/`build` are unused, document the omission in the project dialect.
@@ -201,10 +201,10 @@ docs(refs): add ...
 When a domain has internal modules, use `/` to drill down:
 
 ```
-refactor(messages/recipients): rebuild RecipientManageSheet
-refactor(messages/compose): move into zone folder
-refactor(client/phone): unify mobile required message
-fix(server/opt-out): validate checkPhone query
+refactor(packages/ui/Table): split row-renderer out of Table component
+refactor(apps/dashboard/billing): extract invoice form into a hook
+refactor(server/auth): unify session cookie attribute setters
+fix(api/search): handle empty filter array in query builder
 ```
 
 ### 3.3 Multi-scope — comma-separated
@@ -221,8 +221,8 @@ docs(claude,refs): document server phone SoT after unification cycle
 Long-running features with their own document chain (PDCA-style cycles, multi-week migrations) can use the feature name directly as scope:
 
 ```
-feat(sender-number-mgmt): M1 schema + INACTIVE seed
-feat(message-send-ux-redesign): 3-zone layout
+feat(auth-rewrite-2026-q2): M1 — replace bcrypt with argon2id verifier
+feat(acme-pay-launch): wire Stripe Issuing webhook handler
 ```
 
 The **scope catalog** is project-specific — projects should record their actual high-frequency scopes in the dialect (see §15.2).
@@ -233,7 +233,7 @@ The **scope catalog** is project-specific — projects should record their actua
 
 | Change scope | Body lines | Example |
 |---|:--:|---|
-| Single fix / style sweep | 0-2 | `fix(messages): add cursor-pointer to native button elements` (no body) |
+| Single fix / style sweep | 0-2 | `fix(button): preserve focus ring on disabled state` (no body) |
 | Single concept | 5-10 | A focused fix or extraction |
 | Module-scale | 15-25 | Multi-file refactor or feature module |
 | Architecture change | 30-40 | New domain scaffolding, page rewrite |
@@ -408,7 +408,18 @@ Last block of the body, separated by one blank line. Format `Token: value`. Pars
 
 ### 8.2 Project dialect trailers
 
-Projects often define their own trailers (e.g., `Plan SC: SNM-001~004`, `Design Ref: §2.1`, `Match Rate: 98%`). These are not parsed by stock git tooling but are grep-friendly. Define them in the project's `docs/references/COMMIT.md` and use them consistently.
+Projects often define their own trailers — examples seen in real codebases:
+
+- `Flag: billing-invoice-pdf-v2` — LaunchDarkly / GrowthBook feature flag named
+- `Storybook: components-button--all-variants` — Storybook story link
+- `Rollout: 5% → 50% → 100%` — phased rollout plan
+- `Plan SC: ABC-001~004` — PDCA-style success-criteria reference
+- `Design Ref: §2.1` — design-document section pointer
+- `Match Rate: 98%` — gap-analysis match score
+- `Reported-by: <name>` — kernel-style report attribution
+- `Fixes: <hash>` — kernel-style fix-of-prior-commit pointer
+
+These are not parsed by stock git tooling but are grep-friendly. Define yours in the project's `docs/references/COMMIT.md` and use them consistently.
 
 ### 8.3 Conventions
 
@@ -449,16 +460,19 @@ Use `git revert <hash>` and keep the auto-generated message — but always add t
 ### 10.1 Format
 
 ```
-revert: feat(messages): hide variable feature in UI
+revert: feat(api): add idempotency keys to /v1/payments
 
-This reverts commit c18b7bdf2... .
+This reverts commit 8a3b9c2d... .
 
-Reason: variable parser breaking ALIMTALK template path —
-template body `#{name}` placeholder was triggering server preflight
-block. Single-row personalized path works fine; broadcast path
-needs queue-based redesign before re-enabling.
+Reason: idempotency-key TTL of 24h, combined with a Redis cluster
+failover at 03:42 UTC, caused all replays in the 5-minute window
+after failover to bypass deduplication and produce duplicate charges
+(post-mortem #INC-2031). The fix is to persist replay records to
+durable storage rather than Redis-only, which requires a schema
+migration. Reverting until the durable-storage variant lands.
 
-Refs: c18b7bd
+Refs: 8a3b9c2
+Refs: #INC-2031
 ```
 
 ### 10.2 Rules
@@ -533,7 +547,7 @@ This skill provides the universal layer. Project-specific extensions live in `<p
 
 - **Domain proper nouns** — terms that should not be translated (product names, native-language identifiers, regulatory references)
 - **Custom scope catalog** — actual high-frequency scopes derived from the project's own `git log` (use `scripts/analyze-history.sh`)
-- **Custom trailers** — `Plan SC`, `Design Ref`, `Match Rate`, `Refs`, `Closes`, etc.
+- **Custom trailers** — e.g., `Refs:`, `Closes:`, `Flag:`, `Storybook:`, `Rollout:`, `Plan SC:`, `Design Ref:`, `Match Rate:`, kernel-style `Fixes:` / `Reported-by:`. Whatever your team uses consistently.
 - **Workflow integrations** — auto-commit boundary signals (PDCA phase completion, Linear ticket close, Jira transition, etc.)
 - **Project-specific examples** — annotated commits from this repo's actual log
 - **Type usage policy** — if `perf`/`ci`/`build` are unused, document it
@@ -573,7 +587,7 @@ When this skill triggers:
 - [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/) — type/scope/body format, `!` and `BREAKING CHANGE:` notation
 - Tim Pope, ["A Note About Git Commit Messages"](https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html) — imperative mood, summary/body structure
 - `github/awesome-copilot@git-commit` (29.6K installs) — workflow steps, type detection, secrets blocklist
-- Empirical 200-commit study (TTiRingGo repo, 2026-05) — length sweet spots, `##` outlier observation, sub/multi-scope conventions
+- Empirical 200-commit study (private codebase, 2026-05) — length sweet spots (avg 71-char summary, 16-line body), `##`-header outlier observation (5/200 = 2.5% of corpus), sub-scope (`/`) and multi-scope (`,`) conventions, module-tag pattern in long-running cycles
 
 ---
 
@@ -581,5 +595,6 @@ When this skill triggers:
 
 | Version | Date | Notes |
 |---------|------|-------|
-| 0.1.0 | 2026-05-10 | Initial release. Universal extraction from TTiRingGo `docs/references/COMMIT.md` v0.4. PDCA, Korean proper nouns, and TTiRingGo-specific scope catalog moved out to project dialect (see §13). |
+| 0.1.0 | 2026-05-10 | Initial release. Universal extraction from a private project's `docs/references/COMMIT.md` v0.4 (200-commit empirical study). Project-specific facts (PDCA workflow integration, native-language proper nouns, scope catalog) moved out to project dialect (see §13). |
 | 0.1.1 | 2026-05-11 | Rename `commit-skill` → `principled-git-commit`. Frontmatter `name:`, install paths, scaffold script, DIALECT template, README all updated. Skill content (§0-§14) unchanged. |
+| 0.1.2 | 2026-05-11 | Genericize all examples — replace project-specific commit examples with patterns drawn from real-world open-source operating models (Stripe-style idempotency keys, bcrypt→argon2id migration, idempotent payments revert, kernel-style mm/oom_kill long-form, monorepo `packages/ui` scopes, feature-flag rollout). `examples/good-commits.md` reorganized into 12 categories (A: single-line / B: why-driven / C: features / D: refactors / E: perf with metrics / F: breaking / G: reverts / H: multi-author + AI co-author / I: test/chore/docs/build/ci / J: kernel-style long-form / K: monorepo + feature-flag / L: anti-patterns). `templates/DIALECT.example.md` swapped from a single project to a fictional "Acme Cloud" pnpm monorepo + Linear + LaunchDarkly + squash-merge example. `templates/DIALECT.template.md` placeholder examples diversified (PDCA / squash-merge / trunk-based-with-flags workflows; brand names + native-language regulatory terms + service names). `scaffold-dialect.sh` prompt updated. SKILL.md inline examples (§0.4 / §0.5 / §2 type table / §3.4 feature-scope / §4 length / §8 trailer examples / §10 revert) replaced with generic real-world patterns. References to one specific source repo softened to "private-project 200-commit study" while preserving the empirical attribution. |

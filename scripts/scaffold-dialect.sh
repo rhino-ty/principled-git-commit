@@ -57,7 +57,7 @@ RUN_ANALYZE="${RUN_ANALYZE:-Y}"
 read -rp "Workflow integration (pdca / linear / jira / none): " WORKFLOW
 WORKFLOW="${WORKFLOW:-none}"
 
-echo "Custom trailers (comma-separated tokens like 'Plan SC,Design Ref,Match Rate', blank for none):"
+echo "Custom trailers (comma-separated, e.g., 'Refs,Closes,Flag,Storybook,Plan SC', blank for none):"
 read -r CUSTOM_TRAILERS_RAW
 
 # ─── Build sections ───────────────────────────────────────────────────
