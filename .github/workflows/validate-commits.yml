@@ -1,0 +1,67 @@
+name: validate-commits
+
+# Eat-our-own-dogfood — every push and PR runs the skill's own
+# validate-commit-msg.sh against the commits being introduced.
+# If the skill claims to enforce conventions, the skill's own repo
+# must follow them.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: validate-commit-messages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history for PR commit range)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine commit range
+        id: range
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.event.pull_request.head.sha }}"
+            echo "range=${BASE}..${HEAD}" >> "$GITHUB_OUTPUT"
+            echo "Validating PR commits in range ${BASE}..${HEAD}"
+          else
+            # Push to main — validate just the head commit (already squash-merged or direct push)
+            echo "range=HEAD~1..HEAD" >> "$GITHUB_OUTPUT"
+            echo "Validating push HEAD commit"
+          fi
+
+      - name: Run validate-commit-msg.sh on each commit in range
+        run: |
+          chmod +x scripts/validate-commit-msg.sh
+          FAILED=0
+          while IFS= read -r SHA; do
+            [[ -z "$SHA" ]] && continue
+            echo ""
+            echo "── $(git log -1 --format='%h %s' "$SHA")"
+            git log -1 --format='%B' "$SHA" | scripts/validate-commit-msg.sh --stdin || {
+              EXIT=$?
+              # Exit code 2 = warnings only (allow); exit 1 = errors (fail)
+              if [[ $EXIT -eq 1 ]]; then
+                FAILED=1
+              fi
+            }
+          done < <(git log --format='%H' --no-merges ${{ steps.range.outputs.range }})
+
+          if [[ $FAILED -eq 1 ]]; then
+            echo ""
+            echo "::error::One or more commits failed universal §0-§14 validation."
+            echo "::error::See SKILL.md for the rules and scripts/validate-commit-msg.sh for the linter."
+            exit 1
+          fi
+
+      - name: Run analyze-history.sh sanity (smoke test the analyze script too)
+        run: |
+          chmod +x scripts/analyze-history.sh
+          # Just confirm the script runs without erroring against this repo's own history
+          scripts/analyze-history.sh 50 > /dev/null
+          echo "::notice::analyze-history.sh smoke test passed"
