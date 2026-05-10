@@ -10,6 +10,61 @@ trailer format) is upstream-stable, so most changes here will be about
 empirical refinements (length sweet-spot data, anti-pattern catalog) and
 project-dialect tooling (template, scaffold script, analyze-history script).
 
+## [0.1.3] — 2026-05-11
+
+### Added
+
+- **§1.3 Three commit surfaces** — distinguishes individual commit /
+  PR title / PR squash body. Same §0 principles apply but constraints
+  differ. Especially relevant for squash-merge teams who must lint
+  PR title at creation time, not at merge time.
+- **§3.5 Non-Conventional formats** — explicit acknowledgment that
+  kernel-style (`mm/oom_kill: ...`), bracket-prefix (`[Component] ...`),
+  Mozilla bug-numbered, no-prefix imperative, and Jira-id-prefix
+  formats are all valid. The §0 founding principles apply to every
+  format; only the surface vocabulary changes.
+- **§8.4 AI co-authoring policy** — 6-row decision matrix for when
+  to add `Co-authored-by:` for Claude / Copilot / Cursor / Gemini.
+  Substantial AI authorship (≥30% of diff, architecture shaping,
+  message authoring) merits the trailer; inline autocomplete and
+  mechanical refactor do not. Lists canonical email identities.
+- **§13.5 Org-level dialects** — extends the 2-layer model (universal
+  + project) to a 3-layer model (universal + org + project) for
+  companies with N repos sharing conventions. Documents what goes in
+  each layer and the override rule (project beats org beats universal).
+- **`scripts/validate-commit-msg.sh`** — standalone bash linter that
+  checks a commit message against §0-§14. Exit codes 0/1/2 (pass /
+  errors / warnings). Wires as `commit-msg` git hook for live
+  enforcement, or runs ad-hoc via `--stdin`. Dependency-free
+  (bash + grep + awk + sed).
+- **`.github/workflows/validate-commits.yml`** — GitHub Actions CI
+  that runs validate-commit-msg.sh against every commit in PRs and
+  pushes to main. Eat-our-own-dogfood — the skill's own repo enforces
+  the rules it teaches.
+- **`CONTRIBUTING.md`** — scope of welcome contributions, the
+  commit-msg hook installer one-liner, this repo's scope catalog,
+  and SemVer policy.
+
+### Changed
+
+- GitHub repo topics added: `git`, `conventional-commits`,
+  `commit-message`, `claude-skills`, `ai-skill`, `methodology`,
+  `git-workflow`, `skill`. Improves discoverability on skills.sh
+  marketplace and GitHub topic search.
+
+### Migration
+
+No code-level migration required. Optional adoptions:
+
+- **Wire the new linter as a commit-msg hook** in your project:
+  ```bash
+  ln -sf ~/.claude/skills/principled-git-commit/scripts/validate-commit-msg.sh \
+         "$(git rev-parse --git-dir)/hooks/commit-msg"
+  ```
+- **Update `npx skills update`** to pull the new SKILL.md sections
+  + script. The frontmatter description and trigger keywords are
+  unchanged, so the skill loads the same way as v0.1.2.
+
 ## [0.1.2] — 2026-05-11
 
 ### Changed
