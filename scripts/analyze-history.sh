@@ -15,7 +15,10 @@
 #
 # Exit non-zero if not in a git repo.
 
-set -euo pipefail
+set -eu
+# Note: NOT setting `pipefail` here on purpose. Several `grep -oE | sort | uniq` pipelines
+# legitimately produce zero matches (e.g., sub-scopes section if the repo has no `(foo/bar)`
+# scopes yet), and grep's exit-1 on no-match would abort the script under pipefail.
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "ERROR: not inside a git repository" >&2
