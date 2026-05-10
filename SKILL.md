@@ -49,7 +49,7 @@ description: >
 license: MIT
 metadata:
   author: rhino-ty
-  version: "0.1.2"
+  version: "0.1.3"
 ---
 
 # Commit Conventions
@@ -164,6 +164,22 @@ type(scope): summary
 - Average 16 lines. Anything past **80 lines** indicates a missed split — the commit probably bundles two intents (see §0.1).
 - English-default; switch to native language only when nuance is irretrievable in English.
 
+### 1.3 Three commit surfaces (commit / PR title / squash message)
+
+A commit message can be authored at three different surfaces depending on workflow. They all follow the same §0 principles but differ in audience and constraints:
+
+| Surface | Audience | Constraint |
+|---|---|---|
+| **Individual commit** (`git commit`) | future-you / blame / bisect | Universal §1 format. Atomic. Leaves repo green. |
+| **PR title** (squash-merge teams) | reviewer / changelog / `git log` after squash | Same format as individual commit — **becomes the squashed commit summary** at merge time. Therefore must satisfy §1.1 from PR creation, not just at merge. |
+| **PR squash body** (squash-merge teams) | future-you reading squashed `main` history | The PR description becomes the body. Therefore the description must satisfy §1.2 (no `##` headers, why-over-what bullets, average 16 lines) — most teams' default GitHub PR templates fail this. |
+
+**Trunk-based teams** (no long-running branches): only the **individual commit** surface matters. The other two are absent.
+
+**PDCA / Linear / Jira teams** with feature branches that pre-merge or fast-forward: the individual commit surface is canonical; PR title is informational.
+
+> **Practical**: if your team squash-merges, lint the PR title against §1.1 at PR creation (GitHub Action), and lint the PR description against §1.2. CI rejection at PR-creation time costs less than rejection at merge time.
+
 ---
 
 ## 2. Types
@@ -226,6 +242,22 @@ feat(acme-pay-launch): wire Stripe Issuing webhook handler
 ```
 
 The **scope catalog** is project-specific — projects should record their actual high-frequency scopes in the dialect (see §15.2).
+
+### 3.5 Non-Conventional formats are also valid
+
+Conventional Commits is the dominant format in modern web/JS projects but **not the only valid format**. The §0 founding principles (atomic, leaves-repo-green, why-over-what, imperative, searchable) apply equally to projects using:
+
+| Format | Example | Where it's used |
+|---|---|---|
+| **Kernel-style** (slash subsystem path, no parens) | `mm/oom_kill: avoid OOM-killer for processes with mm == NULL` | Linux kernel, Postgres, OpenBSD |
+| **Bracket-prefix** (older React / jQuery) | `[Component] fix focus restoration on dialog close` | older OSS projects, occasionally still seen |
+| **Tag-prefix** (Mozilla / Bug-numbered) | `Bug 1234567 - prevent leaked timer in async fetch` | Firefox, Mozilla projects |
+| **No-prefix imperative** (Linus's own style) | `Avoid double free in error path` | small projects, hobby repos |
+| **Issue-id prefix** | `ABC-1234: implement export endpoint` | Jira-mandated repos |
+
+This skill defaults to Conventional Commits because it's the most common in the surrounding ecosystem (skills.sh users, Claude/Copilot integrations, npm package conventions). But your dialect file (§13) can declare a different format — the principles still apply, only the surface vocabulary changes.
+
+If your project uses non-Conventional format, document it in dialect §1 alongside the regex/grammar your CI enforces. Consumers of `git interpret-trailers` and changelog generators may need wrapper scripts.
 
 ---
 
@@ -427,6 +459,41 @@ These are not parsed by stock git tooling but are grep-friendly. Define yours in
 - No blank lines inside the trailer block — tokens run consecutively
 - `Signed-off-by:` only when the project enforces DCO
 
+### 8.4 AI co-authoring (Claude / Copilot / Cursor / Gemini)
+
+When an AI assistant materially shapes a commit, attribute via `Co-authored-by:` so credit and traceability survive in `git log` and `git shortlog`. This is increasingly common practice as agentic tools take a larger share of authorship.
+
+**When to add the trailer**:
+
+| Scenario | `Co-authored-by:`? |
+|---|:--:|
+| AI wrote ≥30% of the diff (substantial code generation, not just suggestions) | ✅ |
+| AI proposed the architecture / approach that shaped the commit | ✅ |
+| AI authored the commit message itself, with you accepting most of it | ✅ |
+| AI auto-completed individual lines (Copilot inline suggestions) without architectural input | ❌ |
+| AI explained an API or pointed at docs but you wrote the code | ❌ |
+| AI ran a refactor command (e.g., rename) — purely mechanical | ❌ |
+
+**Common identities** (use whichever your tool documents — the email is canonical for GitHub coauthor rendering):
+
+```
+Co-authored-by: Claude <noreply@anthropic.com>
+Co-authored-by: GitHub Copilot <copilot@github.com>
+Co-authored-by: Cursor <noreply@cursor.com>
+Co-authored-by: Gemini Code Assist <noreply@google.com>
+```
+
+**Multiple AI tools or pair-with-AI**: list all coauthors, one per line:
+
+```
+Co-authored-by: Alex Kim <alex@example.com>
+Co-authored-by: Claude <noreply@anthropic.com>
+```
+
+**Why this matters for AI agents reading history**: the `Co-authored-by:` trailer is one of the strongest signals for an AI agent rebuilding context after `/clear` to know that *another agent* shaped a commit. It informs review weight, debugging hypotheses ("hallucination might be the bug source"), and credit attribution. Skipping the trailer when AI authored substantial work is misleading to the next AI reader as much as to humans.
+
+> **Org policy**: some companies require explicit AI attribution for compliance / IP review; some require it stay out of public history for IP-cleanroom reasons. Check your company policy and bake it into the project dialect.
+
 ---
 
 ## 9. Amend / Fixup Rules
@@ -580,6 +647,37 @@ When this skill triggers:
 2. Detect `<project>/docs/references/COMMIT.md` — if present, load and apply on top
 3. If no dialect exists and the user is about to commit substantial work, offer to scaffold
 
+### 13.5 Org-level dialects (multi-repo organizations)
+
+Companies with N repos that share trailers / scopes / workflow conventions can layer **three** levels instead of two:
+
+```
+~/.claude/skills/principled-git-commit/SKILL.md   ← universal (this skill)
+$ORG_HOME/COMMIT.md                               ← org-level dialect (intranet / template repo)
+<project>/docs/references/COMMIT.md               ← project-level dialect
+```
+
+**How to set up**:
+
+1. Maintain an `acme-eng/commit-dialect` GitHub repo (or similar) with the org-wide `COMMIT.md`.
+2. New repos clone that file into `docs/references/COMMIT.md` as a starting template, then add project-specific extensions on top.
+3. Org changes (e.g., "we now require `Refs:` for all features") propagate via PRs that copy the updated `COMMIT.md` into each repo.
+
+**What goes in org-level dialect**:
+
+- Common trailers all repos use (e.g., Linear ticket prefix, security-review trailer, AI co-author policy)
+- Universal scope catalog (e.g., `apps/`, `packages/`, `infra/` shape if monorepo standard)
+- AI attribution policy (when `Co-authored-by:` is required org-wide)
+- Squash-merge policy if uniformly adopted
+
+**What stays project-level**:
+
+- Domain proper nouns specific to this product
+- Scope catalog from this repo's actual `git log`
+- Project-specific examples and anti-patterns
+
+**Override rules**: project-level beats org-level beats universal. Each layer adds, never silently removes — if a project disables an org rule, it documents the disable explicitly in §5 Type Usage Policy or the relevant section.
+
 ---
 
 ## 14. Source Attribution
@@ -598,3 +696,4 @@ When this skill triggers:
 | 0.1.0 | 2026-05-10 | Initial release. Universal extraction from a private project's `docs/references/COMMIT.md` v0.4 (200-commit empirical study). Project-specific facts (PDCA workflow integration, native-language proper nouns, scope catalog) moved out to project dialect (see §13). |
 | 0.1.1 | 2026-05-11 | Rename `commit-skill` → `principled-git-commit`. Frontmatter `name:`, install paths, scaffold script, DIALECT template, README all updated. Skill content (§0-§14) unchanged. |
 | 0.1.2 | 2026-05-11 | Genericize all examples — replace project-specific commit examples with patterns drawn from real-world open-source operating models (Stripe-style idempotency keys, bcrypt→argon2id migration, idempotent payments revert, kernel-style mm/oom_kill long-form, monorepo `packages/ui` scopes, feature-flag rollout). `examples/good-commits.md` reorganized into 12 categories (A: single-line / B: why-driven / C: features / D: refactors / E: perf with metrics / F: breaking / G: reverts / H: multi-author + AI co-author / I: test/chore/docs/build/ci / J: kernel-style long-form / K: monorepo + feature-flag / L: anti-patterns). `templates/DIALECT.example.md` swapped from a single project to a fictional "Acme Cloud" pnpm monorepo + Linear + LaunchDarkly + squash-merge example. `templates/DIALECT.template.md` placeholder examples diversified (PDCA / squash-merge / trunk-based-with-flags workflows; brand names + native-language regulatory terms + service names). `scaffold-dialect.sh` prompt updated. SKILL.md inline examples (§0.4 / §0.5 / §2 type table / §3.4 feature-scope / §4 length / §8 trailer examples / §10 revert) replaced with generic real-world patterns. References to one specific source repo softened to "private-project 200-commit study" while preserving the empirical attribution. |
+| 0.1.3 | 2026-05-11 | Coverage expansion: §1.3 Three commit surfaces (commit / PR title / squash body — different audiences, same principles), §3.5 Non-Conventional formats acknowledgment (kernel-style / bracket-prefix / Mozilla bug-numbered / no-prefix imperative / Jira-id all valid — §0 principles still apply), §8.4 AI co-authoring policy (when to add `Co-authored-by:` for Claude / Copilot / Cursor / Gemini, with substantial-vs-trivial decision matrix), §13.5 Org-level dialects (3-layer model: universal skill + org-level COMMIT.md + project-level COMMIT.md, with override rules). |
